@@ -17,13 +17,14 @@ dosya_listesi = glob.glob("*.txt")
 # sonuçları saklamak için boş bir sözlük oluştur
 sonuclar = {}
 
+soru_cevap_id = 1
+
 # her dosya için işlem yap
 for dosyalar in dosya_listesi:
     with open(dosyalar, "r", encoding="utf-8") as dosya:
         context = ""
         soru = ""
         cevap = ""
-        soru_cevap_id = 1
         sonuclar[soru_cevap_id] = {"name":dosyalar, "context":[], "soru":[], "cevap":[]}
         
         for satir in dosya:
@@ -41,6 +42,7 @@ for dosyalar in dosya_listesi:
                 sonuclar[soru_cevap_id]["cevap"].append(cevap)
 
         soru_cevap_id += 1
+
 
 # sonuçları dosyaya yaz
 with open("dataset.json", "w", encoding="utf-8") as dosya:
