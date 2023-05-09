@@ -39,15 +39,15 @@ for dosyalar in dosya_listesi:
                 s = (satir.rfind("Soru:"))
                 soru = satir[(s+5):-1].strip()
                     
-            elif satir.startswith("Bu metinden soru ve cevap olarak:") and soru_count == 0:
-                soru_count += 1
-                s = (satir.rfind("Bu metinden soru ve cevap olarak:"))
-                soru = satir[(s+33):-1].strip()
+            # elif satir.startswith("Bu metinden soru ve cevap olarak:") and soru_count == 0:
+            #     soru_count += 1
+            #     s = (satir.rfind("Bu metinden soru ve cevap olarak:"))
+            #     soru = satir[(s+33):-1].strip()
                 
-            elif satir.startswith("Bu metinden 1 adet daha soru ve cevap üret:") and soru_count == 0:
-                soru_count += 1
-                s = (satir.rfind("Bu metinden 1 adet daha soru ve cevap üret:"))
-                soru = satir[(s+44):-1].strip()
+            # elif satir.startswith("Bu metinden 1 adet daha soru ve cevap üret:") and soru_count == 0:
+            #     soru_count += 1
+            #     s = (satir.rfind("Bu metinden 1 adet daha soru ve cevap üret:"))
+            #     soru = satir[(s+44):-1].strip()
                     
             elif satir.startswith("Bu metindeki bir kural hakkında soru:") and soru_count == 0:
                 soru_count += 1
@@ -85,11 +85,10 @@ for dosyalar in dosya_listesi:
                 soru = satir[(s + 2):-1].strip()
                 
             elif (satir.strip().replace('"', '').endswith("?") and soru_count == 0):
-                if ("metinde" not in satir.strip().replace('"', '').lower()):
-                    if ("malesef" not in satir.strip().replace('"', '').lower()):
-                        if ("maalesef" not in satir.strip().replace('"', '').lower()):
-                            soru_count += 1
-                            soru = satir.strip().replace('"', '')
+                if ("malesef" not in satir.strip().replace('"', '').lower()):
+                    if ("maalesef" not in satir.strip().replace('"', '').lower()):
+                        soru_count += 1
+                        soru = satir.strip().replace('"', '')
 
             elif satir.startswith("Cevap:") and cevap_count == 0:
                 cevap_count += 1
@@ -139,7 +138,7 @@ for dosyalar in dosya_listesi:
                         soru = ""
                         cevap = ""
             
-        soru_cevap_id += 1            
+        soru_cevap_id += 1
 
 with open("dataset.json", "w", encoding="utf-8") as dataset:
     json.dump(sonuclar, dataset, sort_keys=False, ensure_ascii=False)
