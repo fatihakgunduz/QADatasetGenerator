@@ -85,10 +85,11 @@ for dosyalar in dosya_listesi:
                 soru = satir[(s + 2):-1].strip()
                 
             elif (satir.strip().replace('"', '').endswith("?") and soru_count == 0):
-                if ("malesef" not in satir.strip().replace('"', '').lower()):
-                    if ("maalesef" not in satir.strip().replace('"', '').lower()):
-                        soru_count += 1
-                        soru = satir.strip().replace('"', '')
+                if ("üzgünüm" not in satir.strip().replace('"', '').lower()):
+                    if ("malesef" not in satir.strip().replace('"', '').lower()):
+                        if ("maalesef" not in satir.strip().replace('"', '').lower()):
+                            soru_count += 1
+                            soru = satir.strip().replace('"', '')
 
             elif satir.startswith("Cevap:") and cevap_count == 0:
                 cevap_count += 1
