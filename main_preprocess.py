@@ -1,30 +1,82 @@
 import json
 import glob
+# -*- coding: utf-8 -*-
+# klasör yolunu belirle
+# klasor_yolu = "./"
 
 # tüm text dosyalarını bul
-dosya_listesi = glob.glob("*.txt")
+# dosya_listesi = glob.glob("/Users/fatihakgunduz/Documents/Önyazıları çıkarılmış veriler/Koca-Üzülmez- Ceza Özel Hükümler/9- Özel hayata karşı suçlar.txt")
+dosya_listesi = glob.glob("/Users/fatihakgunduz/Documents/Önyazıları çıkarılmış veriler/*/*.txt")
+print(dosya_listesi)
+# sonuçları saklamak için boş bir sözlük oluştur
 
 soru_cevap_id = 1
 
+checker=[]
+
+sonuclar = {}
+
+# sonuçları dosyaya yaz
+
+#soru cevapların kaymadığına emin olmak için
 context_count = 0
 soru_count = 0
 cevap_count = 0
-
-checker = []
-sonuclar = {}
+yanlıs_count = 0
+yanlıs_count_2 = 0
 
 # her dosya için işlem yap
 for dosyalar in dosya_listesi:
     with open(dosyalar, "r", encoding="utf-8") as dosya:
-        
         context = ""
         soru = ""
         cevap = ""
+        indis = ""
+        sorunlu = 0
+        sorunlu_2 = 0
+        satir_last = ""
+        satir_last_1 = ""
+        name = dosyalar.split("/")
+        file1 = open(f'sorunlu/{name[-2]}-{name[-1]}', "a")  # append mode
+        file1.write(dosyalar)
+        file1.write("\n\n")
+
+        file2 = open(f'sorunlu-2/{name[-2]}-{name[-1]}', "a")  # append mode
+        file2.write(dosyalar)
+        file2.write("\n\n")
+
         sonuclar[soru_cevap_id] = {"name":dosyalar, "context":[], "soru":[], "cevap":[]}
-        
+
         for satir in dosya:
             
-            if satir.startswith("Son işlenen madde:"):               
+            if satir.startswith("Son işlenen indis:"):
+                
+                if((soru_count == 0 and cevap_count == 0 and context_count == 1) or ((soru_count == 1 and cevap_count == 0 and context_count == 1) or (soru_count == 0 and cevap_count == 1 and context_count == 1))):
+                    
+                    if (satir_last_1 == indis):
+                        continue
+                
+                    satir_last_1 = indis
+                    
+                    sorunlu=1
+                    yanlıs_count += 1
+                    file1.write(indis)
+                    file1.write("\n")
+                
+                indis = satir
+                context_count = 0
+                soru_count = 0
+                cevap_count = 0
+
+            elif satir.startswith("Son işlenen madde:"):
+                
+                if((soru_count == 0 and cevap_count == 0 and context_count == 1) or ((soru_count == 1 and cevap_count == 0 and context_count == 1) or (soru_count == 0 and cevap_count == 1 and context_count == 1))):
+                    sorunlu=1
+                    yanlıs_count += 1
+                    file1.write(indis)
+                    file1.write("\n")
+                
+                indis = satir
                 context_count = 0
                 soru_count = 0
                 cevap_count = 0
@@ -91,7 +143,7 @@ for dosyalar in dosya_listesi:
                             soru_count += 1
                             soru = satir.strip().replace('"', '')
 
-            elif satir.startswith("Cevap:") and cevap_count == 0:
+            elif satir.startswith("Cevap:") and cevap_count == 0 and soru_count ==1 and context_count == 1:
                 cevap_count += 1
                 s = (satir.rfind("Cevap:"))
                 cevap = satir[(s + 6):-1].strip()
@@ -117,7 +169,7 @@ for dosyalar in dosya_listesi:
                         soru = ""
                         cevap = ""
 
-            elif satir.startswith("C:") and cevap_count == 0:
+            elif satir.startswith("C:") and cevap_count == 0 and soru_count ==1 and context_count == 1:
                 cevap_count += 1
                 s = (satir.rfind("C:"))
                 cevap = satir[(s + 2):-1].strip()
@@ -137,11 +189,45 @@ for dosyalar in dosya_listesi:
                         
                         context = ""
                         soru = ""
-                        cevap = ""
-            
-        soru_cevap_id += 1
+                        cevap = ""           
 
-with open("dataset.json", "w", encoding="utf-8") as dataset:
-    json.dump(sonuclar, dataset, sort_keys=False, ensure_ascii=False)
-    
+            elif satir == "\n":
+                continue
+
+            elif satir == " Bu metinden 1 adet soru ve cevap üret.\n":
+                continue
+
+            else:
+                if (satir_last == indis):
+                    continue
+                
+                satir_last = indis
+                
+                sorunlu_2 = 1
+                yanlıs_count_2 += 1
+                
+                file2.write(indis)
+                file2.write("\n")
+
+
+        soru_cevap_id += 1
+        
+        file1.write("\n")
+        file1.close()
+        
+        if(not sorunlu):
+            import os
+            os.remove(f'sorunlu/{name[-2]}-{name[-1]}')
+
+        file2.write("\n")
+        file2.close()
+        
+        if(not sorunlu_2):
+            import os
+            os.remove(f'sorunlu-2/{name[-2]}-{name[-1]}')
+
+print(yanlıs_count)
+print(yanlıs_count_2)
+with open("new_dataset_batuhan.json", "w", encoding="utf-8") as dataset:
+    json.dump(sonuclar,dataset,sort_keys=False,ensure_ascii=False,indent=4)
 dataset.close()

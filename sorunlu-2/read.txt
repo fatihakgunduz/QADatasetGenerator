@@ -1,0 +1,1 @@
+Sorunlu dosyaların indis numaraları ile tutulduğu klasör
